@@ -262,13 +262,6 @@ jobs:
           [ -f "common/drivers/kernelsu/setuid_hook.c" ] && sed -i '/susfs_extra_works/d' common/drivers/kernelsu/setuid_hook.c || true
           [ -f "common/drivers/kernelsu/ksu.c" ] && sed -i '/susfs_extra_works/d' common/drivers/kernelsu/ksu.c || true
 
-          if [ -f "common/security/selinux/hooks.c" ]; then
-            cat >> common/security/selinux/hooks.c << 'EOF'
-          bool ksu_selinux_hide_running = false;
-          struct selinux_state fake_state;
-          EOF
-          fi
-
       - name: Inject kernel configs
         working-directory: ${{ env.KERNEL_ROOT }}
         run: |
