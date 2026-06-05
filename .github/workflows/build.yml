@@ -257,22 +257,10 @@ jobs:
           fi
 
           [ -f "common/drivers/kernelsu/sulog/event.c" ] && sed -i 's/&USER_ARG_NULL/USER_ARG_NULL/g' common/drivers/kernelsu/sulog/event.c || true
-          [ -f "common/drivers/kernelsu/runtime/ksud.c" ] && sed -i 's/DEFINE_STATIC_KEY_TRUE(ksu_is_init_rc_hook_enabled);/DEFINE_STATIC_KEY_TRUE(ksu_init_rc_hook_key_var);/g' common/drivers/kernelsu/runtime/ksud.c || true
-          [ -f "common/drivers/kernelsu/runtime/ksud.c" ] && sed -i 's/DEFINE_STATIC_KEY_TRUE(ksu_is_input_hook_enabled);/DEFINE_STATIC_KEY_TRUE(ksu_input_hook_key_var);/g' common/drivers/kernelsu/runtime/ksud.c || true
 
           [ -f "common/fs/devpts/inode.c" ] && sed -i '/ksu_handle_devpts/d' common/fs/devpts/inode.c || true
           [ -f "common/drivers/kernelsu/setuid_hook.c" ] && sed -i '/susfs_extra_works/d' common/drivers/kernelsu/setuid_hook.c || true
           [ -f "common/drivers/kernelsu/ksu.c" ] && sed -i '/susfs_extra_works/d' common/drivers/kernelsu/ksu.c || true
-
-          if [ -f "common/drivers/kernelsu/ksu.c" ]; then
-            cat >> common/drivers/kernelsu/ksu.c << 'EOF'
-          #include <linux/jump_label.h>
-          DEFINE_STATIC_KEY_FALSE(ksu_init_rc_hook_key_false); EXPORT_SYMBOL(ksu_init_rc_hook_key_false);
-          DEFINE_STATIC_KEY_FALSE(ksu_input_hook_key_false); EXPORT_SYMBOL(ksu_input_hook_key_false);
-          bool ksu_is_init_rc_hook_enabled(void) { return static_branch_unlikely(&ksu_init_rc_hook_key_false); } EXPORT_SYMBOL(ksu_is_init_rc_hook_enabled);
-          bool ksu_is_input_hook_enabled(void) { return static_branch_unlikely(&ksu_input_hook_key_false); } EXPORT_SYMBOL(ksu_is_input_hook_enabled);
-          EOF
-          fi
 
           if [ -f "common/security/selinux/hooks.c" ]; then
             cat >> common/security/selinux/hooks.c << 'EOF'
